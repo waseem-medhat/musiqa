@@ -5,13 +5,23 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/joho/godotenv"
 	_ "github.com/tursodatabase/libsql-client-go/libsql"
+	"github.com/wipdev-tech/musiqa/internal/spotifyapi"
 )
 
 func main() {
 	godotenv.Load()
+
+	spotifyService := spotifyapi.NewService(
+		os.Getenv("SPOTIFY_CLIENT_ID"),
+		os.Getenv("SPOTIFY_CLIENT_SECRET"),
+	)
+
+	spotifyService.GetArtistInfo("4Z8W4fKeB5YxbusRsdQVPb")
+	os.Exit(0)
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/v1", handleWelcome)
