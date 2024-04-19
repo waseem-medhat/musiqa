@@ -15,7 +15,12 @@ import (
 func main() {
 	godotenv.Load()
 
-	spotifyapi.GetArtistInfo()
+	spotifyService := spotifyapi.NewService(
+		os.Getenv("SPOTIFY_CLIENT_ID"),
+		os.Getenv("SPOTIFY_CLIENT_SECRET"),
+	)
+
+	spotifyService.GetArtistInfo("4Z8W4fKeB5YxbusRsdQVPb")
 	os.Exit(0)
 
 	mux := http.NewServeMux()

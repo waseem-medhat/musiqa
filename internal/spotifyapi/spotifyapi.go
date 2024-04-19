@@ -7,15 +7,27 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"os"
 )
 
-func requestAccessToken() {
+type Service struct {
+	spotifyClientID     string
+	spotifyClientSecret string
+	accessToken         string
+}
+
+func NewService(spotifyClientID, spotifyClientSecret string) *Service {
+	return &Service{
+		spotifyClientID:     spotifyClientID,
+		spotifyClientSecret: spotifyClientSecret,
+	}
+}
+
+func (s *Service) requestAccessToken() {
 	body := bytes.NewBufferString(
 		fmt.Sprintf(
 			"grant_type=client_credentials&client_id=%s&client_secret=%s",
-			os.Getenv("SPOTIFY_CLIENT_ID"),
-			os.Getenv("SPOTIFY_CLIENT_SECRET"),
+			s.spotifyClientID,
+			s.spotifyClientSecret,
 		),
 	)
 	req, err := http.NewRequest(http.MethodPost, "https://accounts.spotify.com/api/token", body)
@@ -50,13 +62,13 @@ func requestAccessToken() {
 	fmt.Printf("%+v\n", token)
 }
 
-func GetArtistInfo() {
+func (s *Service) GetArtistInfo(artistID string) {
 	req, err := http.NewRequest(
 		http.MethodGet,
-		"https://api.spotify.com/v1/artists/"+"4Z8W4fKeB5YxbusRsdQVPb",
+		"https://api.spotify.com/v1/artists/"+artistID,
 		nil,
 	)
-	req.Header.Set("Authorization", "Bearer BQBV-z5avnz0EhXwdNNPhGX9dax95uV3EMF8o187qXFCxJFzo5QfG02xSsOAjYD1RtIAvZG-OJxCPxSPozrbTFitGIIqFtOTFd24CpKWV6EzdtACGms")
+	req.Header.Set("Authorization", "Bearer "+s.accessToken)
 	if err != nil {
 		log.Fatal("failed to build request:", err)
 	}
